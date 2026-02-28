@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.11'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'org.example'
+version = '0.0.1-SNAPSHOT'
+description = 'server'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    easyQueryVersion = '3.0.25'
+    mysqlVersion = '9.2.0'
+    lombokVersion = '1.18.36'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'  // WebClient for streaming HTTP calls
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    /**
+     * Easy Query
+     */
+    // 👇 1. 引入 MySQL 底层连接驱动
+    implementation 'com.mysql:mysql-connector-j'
+
+    // 👇 2. 引入 Easy-Query 的 Spring Boot 启动器 (这里使用较新的 3.1.x 版本)
+    def eqVersion = '3.1.83'
+    implementation "com.easy-query:sql-springboot-starter:${eqVersion}"
+
+    // 👇 3. 引入 Easy-Query 的注解处理器 (核心魔法 ✨)
+    annotationProcessor "com.easy-query:sql-processor:${eqVersion}"
+
+    // 👇 4. Jackson 用于解析 JSON
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

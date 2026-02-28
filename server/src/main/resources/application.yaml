@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: server
+  datasource:
+    # 这里的 ai_chat 就是你之前在本地建好的数据库
+    url: jdbc:mysql://localhost:3306/ai_chat?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root # 换成你的 MySQL 用户名
+    password: 123456 # 换成你的 MySQL 密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+easy-query:
+  enable: true
+  database: mysql
+  print-sql: true
+
+# MiniMax AI 配置
+minimax:
+  api-key: YOUR_KEY # 替换成你在 MiniMax 开放平台获取的 API Key
+  base-url: https://api.minimaxi.com/v1
+  model: MiniMax-M2.5
