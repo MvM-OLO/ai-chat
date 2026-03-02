@@ -2,14 +2,26 @@
   <main class="flex-1 flex flex-col h-screen min-w-0 relative bg-bg-primary">
     <!-- Header -->
     <header
-      class="h-[60px] min-h-[60px] flex items-center px-6 border-b border-border-default bg-bg-primary/80 backdrop-blur-xl z-5"
+      class="h-[60px] min-h-[60px] flex items-center px-4 md:px-6 border-b border-border-default bg-bg-primary/80 backdrop-blur-xl z-5 gap-3"
     >
-      <h1 class="text-[15px] font-semibold text-text-primary">
+      <!-- 移动端汉堡菜单 -->
+      <button
+        class="md:hidden w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors shrink-0"
+        @click="$emit('toggle-sidebar')"
+        aria-label="菜单"
+      >
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor">
+          <rect y="0" width="18" height="2" rx="1" />
+          <rect y="6" width="18" height="2" rx="1" />
+          <rect y="12" width="18" height="2" rx="1" />
+        </svg>
+      </button>
+      <h1 class="text-[15px] font-semibold text-text-primary truncate flex-1">
         {{ sessionTitle }}
       </h1>
       <span
         v-if="sessionId"
-        class="ml-2.5 text-[11px] px-2 py-0.5 rounded-full bg-accent-glow text-accent-light font-medium"
+        class="shrink-0 text-[11px] px-2 py-0.5 rounded-full bg-accent-glow text-accent-light font-medium"
       >
         对话中
       </span>
@@ -17,7 +29,7 @@
 
     <!-- Messages or Welcome -->
     <div
-      class="flex-1 overflow-y-auto p-6 flex flex-col gap-5"
+      class="flex-1 overflow-y-auto px-3 py-4 md:p-6 flex flex-col gap-4 md:gap-5"
       ref="messagesContainer"
     >
       <!-- Welcome Screen -->
@@ -26,7 +38,7 @@
         class="flex-1 flex flex-col items-center justify-center gap-5 animate-fade-in-up"
       >
         <div
-          class="w-[72px] h-[72px] rounded-2xl bg-gradient-to-br from-accent to-[#5ebbfc] flex items-center justify-center text-[32px] shadow-[0_0_20px_var(--color-accent-glow),0_8px_32px_rgba(0,0,0,0.5)] animate-float"
+          class="w-[72px] h-[72px] rounded-2xl bg-linear-to-br from-accent to-[#5ebbfc] flex items-center justify-center text-[32px] shadow-[0_0_20px_var(--color-accent-glow),0_8px_32px_rgba(0,0,0,0.5)] animate-float"
         >
           ✨
         </div>
@@ -39,21 +51,21 @@
           我是你的 AI
           智能助手，可以帮你回答问题、编写代码、分析数据等。开始一段对话吧！
         </p>
-        <div class="flex gap-3 mt-3 flex-wrap justify-center">
+        <div class="flex gap-2 md:gap-3 mt-3 flex-wrap justify-center px-2">
           <div
-            class="px-[18px] py-3 rounded-xl bg-glass-bg border border-glass-border text-text-secondary text-[13px] cursor-pointer max-w-[200px] text-center transition-all duration-250 hover:bg-accent-glow hover:border-accent hover:text-accent-light hover:-translate-y-0.5 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
+            class="px-4 py-2.5 md:px-[18px] md:py-3 rounded-xl bg-glass-bg border border-glass-border text-text-secondary text-[13px] cursor-pointer w-full max-w-[200px] text-center transition-all duration-250 hover:bg-accent-glow hover:border-accent hover:text-accent-light hover:-translate-y-0.5 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
             @click="$emit('send-tip', '帮我解释一下什么是 Vue 3 的组合式 API')"
           >
             💡 解释 Vue 3 组合式 API
           </div>
           <div
-            class="px-[18px] py-3 rounded-xl bg-glass-bg border border-glass-border text-text-secondary text-[13px] cursor-pointer max-w-[200px] text-center transition-all duration-250 hover:bg-accent-glow hover:border-accent hover:text-accent-light hover:-translate-y-0.5 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
+            class="px-4 py-2.5 md:px-[18px] md:py-3 rounded-xl bg-glass-bg border border-glass-border text-text-secondary text-[13px] cursor-pointer w-full max-w-[200px] text-center transition-all duration-250 hover:bg-accent-glow hover:border-accent hover:text-accent-light hover:-translate-y-0.5 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
             @click="$emit('send-tip', '用 Java 写一个冒泡排序算法')"
           >
             🧑‍💻 写一个排序算法
           </div>
           <div
-            class="px-[18px] py-3 rounded-xl bg-glass-bg border border-glass-border text-text-secondary text-[13px] cursor-pointer max-w-[200px] text-center transition-all duration-250 hover:bg-accent-glow hover:border-accent hover:text-accent-light hover:-translate-y-0.5 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
+            class="px-4 py-2.5 md:px-[18px] md:py-3 rounded-xl bg-glass-bg border border-glass-border text-text-secondary text-[13px] cursor-pointer w-full max-w-[200px] text-center transition-all duration-250 hover:bg-accent-glow hover:border-accent hover:text-accent-light hover:-translate-y-0.5 hover:shadow-[0_0_20px_var(--color-accent-glow)]"
             @click="$emit('send-tip', '推荐几本经典的编程书籍')"
           >
             📚 推荐编程书籍
@@ -117,7 +129,7 @@ const props = defineProps({
   },
 });
 
-defineEmits(["send-message", "send-tip", "stop-streaming"]);
+defineEmits(["send-message", "send-tip", "stop-streaming", "toggle-sidebar"]);
 
 const messagesContainer = ref(null);
 // 用户是否已向上滚动（暂停自动滚动）

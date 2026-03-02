@@ -1,11 +1,20 @@
 <template>
   <div class="flex h-screen w-screen overflow-hidden bg-bg-primary">
+    <!-- 移动端遮罩层 -->
+    <div
+      v-if="sidebarOpen"
+      class="fixed inset-0 bg-black/50 z-20 md:hidden"
+      @click="sidebarOpen = false"
+    />
+
     <Sidebar
       :sessions="sessions"
       :activeSessionId="activeSessionId"
+      :mobileOpen="sidebarOpen"
       @new-chat="handleNewChat"
       @select-session="handleSelectSession"
       @delete-session="handleDeleteSession"
+      @close="sidebarOpen = false"
     />
     <ChatWindow
       :sessionId="activeSessionId"
@@ -16,6 +25,7 @@
       @send-message="handleSendMessage"
       @send-tip="handleSendTip"
       @stop-streaming="handleStopStreaming"
+      @toggle-sidebar="sidebarOpen = !sidebarOpen"
     />
   </div>
 </template>
@@ -26,13 +36,16 @@ import Sidebar from "./components/Sidebar.vue";
 import ChatWindow from "./components/ChatWindow.vue";
 import { createSession, getMessages, sendMessageStream } from "./api/chat.js";
 
+// ========== 侧边栏状态（移动端） ==========
+const sidebarOpen = ref(false);
+
 // ========== 会话管理 ==========
 const sessions = ref([]);
 const activeSessionId = ref(null);
-const messagesMap = ref({}); // sessionId -> messages[]
+const messagesMap = ref({});
 const isStreaming = ref(false);
 const streamingContent = ref("");
-let abortController = null; // 用于中止流式回复
+let abortController = null;
 
 const activeSessionTitle = computed(() => {
   const s = sessions.value.find((s) => s.id === activeSessionId.value);
@@ -44,7 +57,6 @@ const currentMessages = computed(() => {
   return messagesMap.value[activeSessionId.value] || [];
 });
 
-// 创建新会话
 async function handleNewChat() {
   try {
     const sessionId = await createSession("新对话");
@@ -56,14 +68,15 @@ async function handleNewChat() {
     sessions.value.unshift(newSession);
     messagesMap.value[sessionId] = [];
     activeSessionId.value = sessionId;
+    sidebarOpen.value = false; // 移动端新建后关闭侧边栏
   } catch (err) {
     console.error("创建会话失败:", err);
   }
 }
 
-// 选择会话
 async function handleSelectSession(sessionId) {
   activeSessionId.value = sessionId;
+  sidebarOpen.value = false; // 移动端选择后关闭侧边栏
   if (!messagesMap.value[sessionId]) {
     try {
       const messages = await getMessages(sessionId);
@@ -75,7 +88,6 @@ async function handleSelectSession(sessionId) {
   }
 }
 
-// 删除会话（仅前端删除）
 function handleDeleteSession(sessionId) {
   sessions.value = sessions.value.filter((s) => s.id !== sessionId);
   delete messagesMap.value[sessionId];
@@ -84,7 +96,6 @@ function handleDeleteSession(sessionId) {
   }
 }
 
-// 中止流式回复
 function handleStopStreaming() {
   if (abortController) {
     abortController.abort();
@@ -92,17 +103,15 @@ function handleStopStreaming() {
   }
 }
 
-// 发送消息
 async function handleSendMessage(content) {
   if (isStreaming.value) return;
 
-  // 如果没有会话，自动创建一个
   if (!activeSessionId.value) {
     await handleNewChat();
   }
 
   const sessionId = activeSessionId.value;
-  if (!sessionId) return; // 创建失败时的保护
+  if (!sessionId) return;
 
   if (!messagesMap.value[sessionId]) {
     messagesMap.value[sessionId] = [];
@@ -114,7 +123,6 @@ async function handleSendMessage(content) {
     createTime: new Date().toISOString(),
   });
 
-  // 更新会话标题（如果是第一条消息）
   if (messagesMap.value[sessionId].length === 1) {
     const session = sessions.value.find((s) => s.id === sessionId);
     if (session) {
@@ -132,7 +140,6 @@ async function handleSendMessage(content) {
       streamingContent.value += chunk;
     },
     onDone() {
-      // 将已接收的内容保存为消息（即使是中止的）
       if (streamingContent.value) {
         messagesMap.value[sessionId].push({
           id: Date.now().toString() + "_ai",
@@ -147,7 +154,6 @@ async function handleSendMessage(content) {
     },
     onError(err) {
       console.error("流式回复出错:", err);
-      // 如果是用户主动中止，保存已接收的内容
       if (err.name === "AbortError" && streamingContent.value) {
         messagesMap.value[sessionId].push({
           id: Date.now().toString() + "_ai",

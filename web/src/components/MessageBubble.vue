@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex gap-3 max-w-[800px] w-full mx-auto animate-fade-in-up"
+    class="flex gap-2 md:gap-3 w-full mx-auto animate-fade-in-up"
     :class="role === 'user' ? 'flex-row-reverse' : ''"
   >
     <!-- Avatar -->
@@ -23,13 +23,13 @@
       <!-- User message: plain text -->
       <div
         v-if="role === 'user'"
-        class="inline-block px-4 py-3 rounded-2xl rounded-tr-sm text-sm leading-7 max-w-[600px] wrap-break-word whitespace-pre-wrap bg-accent text-text-on-accent shadow-[0_0_20px_var(--color-accent-glow)]"
+        class="inline-block px-4 py-3 rounded-2xl rounded-tr-sm text-sm leading-7 max-w-[85%] md:max-w-[600px] wrap-break-word whitespace-pre-wrap bg-accent text-text-on-accent shadow-[0_0_20px_var(--color-accent-glow)]"
       >
         {{ content }}
       </div>
 
       <!-- AI message -->
-      <div v-else class="w-full max-w-[680px] flex flex-col gap-2">
+      <div v-else class="w-full flex flex-col gap-2">
         <!-- 思考过程 (可折叠) -->
         <div
           v-if="

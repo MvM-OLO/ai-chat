@@ -1,17 +1,32 @@
 <template>
   <aside
-    class="w-[280px] min-w-[280px] h-screen flex flex-col bg-bg-secondary border-r border-border-default relative z-10"
+    class="flex flex-col bg-bg-secondary border-r border-border-default relative z-30 transition-transform duration-300"
+    :class="[
+      // 桌面端：固定显示
+      'md:w-[260px] md:min-w-[260px] md:translate-x-0 md:static md:h-screen',
+      // 移动端：抽屉式，固定定位，通过 mobileOpen 控制显示
+      'max-md:fixed max-md:left-0 max-md:top-0 max-md:h-full max-md:w-[280px]',
+      mobileOpen ? 'max-md:translate-x-0' : 'max-md:-translate-x-full',
+    ]"
   >
     <!-- Header -->
     <div class="px-4 pt-5 pb-3 flex items-center gap-3">
       <div
-        class="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-[#5ebbfc] flex items-center justify-center text-lg font-bold text-text-on-accent shrink-0 shadow-[0_0_20px_var(--color-accent-glow)]"
+        class="w-9 h-9 rounded-xl bg-linear-to-br from-accent to-[#5ebbfc] flex items-center justify-center text-lg font-bold text-text-on-accent shrink-0 shadow-[0_0_20px_var(--color-accent-glow)]"
       >
         AI
       </div>
-      <span class="text-base font-semibold text-text-primary tracking-tight"
+      <span
+        class="text-base font-semibold text-text-primary tracking-tight flex-1"
         >AI Chat</span
       >
+      <!-- 移动端关闭按钮 -->
+      <button
+        class="md:hidden w-7 h-7 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-primary hover:bg-bg-hover transition-colors"
+        @click="$emit('close')"
+      >
+        ✕
+      </button>
     </div>
 
     <!-- New Chat Button -->
@@ -85,9 +100,13 @@ defineProps({
     type: String,
     default: null,
   },
+  mobileOpen: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-defineEmits(["new-chat", "select-session", "delete-session"]);
+defineEmits(["new-chat", "select-session", "delete-session", "close"]);
 
 function formatTime(timeStr) {
   if (!timeStr) return "";
