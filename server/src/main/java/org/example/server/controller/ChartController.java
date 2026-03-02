@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class ChartController {
     // 3. 发送消息，接收 SSE 流 (POST /api/chat/messages/stream)
     // 注意：这里的 produces 必须指定为 text/event-stream，否则前端无法按流接收
     @PostMapping(value = "/messages/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter chatStream(@RequestBody ChatRequest request) {
+    public SseEmitter chatStream(@RequestBody ChatRequest request, HttpServletResponse response) {
         return chatService.chatStream(request.getSessionId(), request.getContent());
     }
 

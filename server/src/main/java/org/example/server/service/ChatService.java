@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.server.config.MiniMaxConfig;
 import org.example.server.domain.ChatMessage;
 import org.example.server.domain.ChatSession;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -134,7 +135,12 @@ public class ChatService {
                                             if (!content.isEmpty()) {
                                                 // 直接发送原始内容（含 <think> 标签，前端负责分离展示）
                                                 fullContent.append(content);
-                                                emitter.send(content);
+                                                // 使用 event() builder 明确设置内容类型，避免代理缓冲
+                                                emitter.send(
+                                                    SseEmitter.event()
+                                                        .data(content, MediaType.TEXT_PLAIN)
+                                                        .build()
+                                                );
                                             }
                                         }
                                     }

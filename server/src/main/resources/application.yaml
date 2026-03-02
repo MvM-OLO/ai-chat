@@ -7,6 +7,10 @@ spring:
     username: root # 换成你的 MySQL 用户名
     password: 123456 # 换成你的 MySQL 密码
     driver-class-name: com.mysql.cj.jdbc.Driver
+  profiles:
+    active: dev
+
+
 easy-query:
   enable: true
   database: mysql
@@ -14,6 +18,6 @@ easy-query:
 
 # MiniMax AI 配置
 minimax:
-  api-key: YOUR_KEY # 替换成你在 MiniMax 开放平台获取的 API Key
+  api-key: YOUR_KEY
   base-url: https://api.minimaxi.com/v1
   model: MiniMax-M2.5
